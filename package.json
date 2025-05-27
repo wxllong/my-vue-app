@@ -1,0 +1,36 @@
+{
+  "name": "vue-admin-ts",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc && vite build",
+    "preview": "vite preview",
+    "clean": "pnpm clean:all",
+    "clean:all": "rm -rf node_modules .turbo dist",
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
+    "format": "prettier --write src/"
+  },
+  "dependencies": {
+    "@ant-design/icons-vue": "^7.0.1",
+    "@vueuse/core": "^10.7.2",
+    "ant-design-vue": "^4.0.7",
+    "axios": "^1.6.2",
+    "pinia": "^2.1.7",
+    "vue": "^3.3.11",
+    "vue-router": "^4.2.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.4",
+    "@vitejs/plugin-vue": "^4.5.2",
+    "@vue/tsconfig": "^0.5.0",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.32",
+    "sass": "^1.69.5",
+    "tailwindcss": "^3.3.6",
+    "typescript": "^5.2.2",
+    "vite": "^5.0.7",
+    "vue-tsc": "^1.8.25"
+  }
+}

@@ -1,0 +1,79 @@
+@forward 'variables';
+
+// 弹性布局
+@mixin flex($direction: row, $justify: flex-start, $align: stretch) {
+  display: flex;
+  flex-direction: $direction;
+  justify-content: $justify;
+  align-items: $align;
+}
+
+// 响应式断点
+@mixin respond-to($breakpoint) {
+  @if $breakpoint == xs {
+    @media (max-width: $screen-xs) { @content; }
+  }
+  @else if $breakpoint == sm {
+    @media (min-width: $screen-sm) { @content; }
+  }
+  @else if $breakpoint == md {
+    @media (min-width: $screen-md) { @content; }
+  }
+  @else if $breakpoint == lg {
+    @media (min-width: $screen-lg) { @content; }
+  }
+  @else if $breakpoint == xl {
+    @media (min-width: $screen-xl) { @content; }
+  }
+  @else if $breakpoint == xxl {
+    @media (min-width: $screen-xxl) { @content; }
+  }
+}
+
+// 文本溢出省略
+@mixin text-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// 清除浮动
+@mixin clearfix {
+  &::after {
+    content: '';
+    display: table;
+    clear: both;
+  }
+}
+
+// 阴影效果
+@mixin box-shadow($level: 1) {
+  @if $level == 1 {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  } @else if $level == 2 {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  } @else if $level == 3 {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  }
+}
+
+// 过渡动画
+@mixin transition($property: all, $duration: 0.3s, $timing: ease) {
+  transition: $property $duration $timing;
+}
+
+// 居中定位
+@mixin center($type: 'both') {
+  position: absolute;
+  @if $type == 'both' {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  } @else if $type == 'horizontal' {
+    left: 50%;
+    transform: translateX(-50%);
+  } @else if $type == 'vertical' {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+} 
