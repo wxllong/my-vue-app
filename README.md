@@ -16,6 +16,9 @@
 ### 状态管理
 - [Pinia](https://pinia.vuejs.org/) - Vue 的状态管理库
 
+### 事件通信
+- [@vueuse/core](https://vueuse.org/) - 全局事件总线 (EventBus)
+
 ### 路由
 - [Vue Router](https://router.vuejs.org/) - Vue.js 的官方路由
 
@@ -35,13 +38,14 @@
 - 💪 TypeScript 支持
 - 🎨 集成 Ant Design Vue 组件库
 - 📦 使用 Pinia 进行状态管理
+- 📡 全局事件总线通信
 - 🛣️ Vue Router 路由管理
 - 📝 ESLint + Prettier 代码规范
 - 🐶 Husky + lint-staged 提交检查
 - 📦 使用 pnpm 作为包管理器
 - 🎯 完整的 TypeScript 支持
 - 🔍 代码提交规范检查
-- �� 支持暗黑模式
+- 🌙 支持暗黑模式
 - 📱 响应式布局
 - 🔌 内置API请求封装
 - 🔒 路由权限控制
@@ -113,6 +117,8 @@ server: {
 │   ├── assets/        # 资源文件
 │   ├── components/    # 公共组件
 │   ├── layouts/       # 布局组件
+│   ├── libs/          # 全局工具库
+│   │   └── eventBus.ts # 全局事件总线
 │   ├── router/        # 路由配置
 │   ├── stores/        # 状态管理
 │   ├── styles/        # 全局样式
@@ -176,7 +182,31 @@ server: {
 2. 使用Pinia的`defineStore`定义状态
 3. 在组件中使用`useStore`获取状态
 
-### 4. 如何解决ESLint错误？
+### 4. 如何使用全局事件总线？
+1. 在组件中通过 `getCurrentInstance()` 获取代理对象
+2. 使用 `$pub` 发布事件，`$sub` 订阅事件，`$unsub` 取消订阅
+
+#### 发布事件：
+```typescript
+const { proxy: { $pub } } = getCurrentInstance() as any;
+$pub('key', data);
+```
+
+#### 订阅事件：
+```typescript
+const { proxy: { $sub } } = getCurrentInstance() as any;
+$sub('key', (data) => {
+  // 处理事件
+});
+```
+
+#### 取消订阅：
+```typescript
+const { proxy: { $unsub } } = getCurrentInstance() as any;
+$unsub('key');
+```
+
+### 5. 如何解决ESLint错误？
 - 运行`pnpm lint`查看错误
 - 运行`pnpm lint --fix`自动修复可修复的错误
 - 对于无法自动修复的错误，根据提示手动修改
@@ -190,6 +220,7 @@ server: {
 - [ESLint 配置指南](./docs/eslint-guide.md)
 - [Pinia 文档](https://pinia.vuejs.org/)
 - [Vue Router 文档](https://router.vuejs.org/)
+- [VueUse EventBus 文档](https://vueuse.org/core/useEventBus/)
 
 ## 许可证
 
