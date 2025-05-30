@@ -184,12 +184,18 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
+$primary-color: #1890ff;
+$dark-bg: #1f1f1f;
+$dark-bg-sider: #141414;
+$dark-text: #e0e0e0;
+$dark-border: #303030;
+
 .layout {
   min-height: 100vh;
 }
 
 .header {
-  background: #2c3e50 !important;
+  background: #001529 !important;
   padding: 0 24px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   height: 64px;
@@ -218,8 +224,9 @@ onMounted(() => {
 
     .theme-btn {
       color: #fff;
+
       &:hover {
-        color: rgba(255, 255, 255, 0.8);
+        color: rgba(255, 255, 255, 0.85);
       }
     }
 
@@ -238,8 +245,9 @@ onMounted(() => {
 
       .logout-btn {
         color: #fff;
+
         &:hover {
-          color: rgba(255, 255, 255, 0.8);
+          color: rgba(255, 255, 255, 0.85);
         }
       }
     }
@@ -258,30 +266,65 @@ onMounted(() => {
 
 .content {
   padding: 24px;
+  background: #f0f2f5;
   min-height: calc(100vh - 64px);
 }
 
+// 暗色主题
 .dark-theme {
+  .header {
+    background: $dark-bg !important;
+  }
+
+  .sider,
   .dark-sider {
-    background: #34495e !important;
+    background: $dark-bg-sider !important;
 
     .menu {
-      background: #34495e !important;
-      color: #fff;
+      background: $dark-bg-sider !important;
+      color: $dark-text;
+
+      :deep(.ant-menu-item),
+      :deep(.ant-menu-submenu-title) {
+        color: $dark-text;
+
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.06);
+          color: #fff;
+        }
+      }
+
+      :deep(.ant-menu-item-selected) {
+        background-color: $primary-color !important;
+        color: #fff !important;
+
+        .anticon {
+          color: #fff !important;
+        }
+      }
     }
   }
 
   .dark-content {
-    background: #2c3e50 !important;
-    color: #fff;
+    background: $dark-bg !important;
+    color: $dark-text;
+  }
+
+  .theme-btn,
+  .username,
+  .logout-btn {
+    color: $dark-text !important;
   }
 }
 
+// 全局菜单项选中样式
 :deep(.ant-menu-item-selected) {
-  background-color: #1890ff !important;
+  background-color: $primary-color !important;
   color: #fff !important;
+
   .anticon {
     color: #fff !important;
   }
 }
 </style>
+
