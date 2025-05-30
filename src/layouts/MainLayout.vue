@@ -3,6 +3,7 @@
     <a-layout-header class="header">
       <div class="header-content">
         <div class="logo">
+          <ComSvgIcon name="vue" size="24" />
           <h1 class="title">Vue 3 Demo</h1>
         </div>
         <div class="header-right">
@@ -207,6 +208,9 @@ $dark-border: #303030;
   }
 
   .logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     .title {
       color: #fff;
       font-size: 20px;

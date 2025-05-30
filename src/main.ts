@@ -5,6 +5,10 @@ import pinia from './stores'
 import Antd from 'ant-design-vue'
 import 'ant-design-vue/dist/reset.css'
 import './assets/style/index.scss'
+
+// svg全局引入
+import 'virtual:svg-icons-register'
+
 import { eventBus } from './libs/eventBus';
 
 const app = createApp(App)

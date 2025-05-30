@@ -10,6 +10,7 @@ const props = withDefaults(defineProps<{
   size?: string | number
 }>(), {
   color: '#fff',
+  size: 16,
 });
 
 const symbolId = computed(() => `#icon-${props.name}`);
