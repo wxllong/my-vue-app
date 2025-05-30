@@ -15,7 +15,7 @@ export const useUserStore = defineStore('user', () => {
       const { data } = await login(params)
       token.value = data.token
       localStorage.setItem('token', data.token)
-    isLoggedIn.value = true
+      isLoggedIn.value = true
       await getUserInfoAction()
       return true
     } catch (error) {
@@ -44,6 +44,13 @@ export const useUserStore = defineStore('user', () => {
     localStorage.removeItem('token')
   }
 
+  // 新增：初始化用户信息
+  const initUser = async () => {
+    if (token.value) {
+      await getUserInfoAction()
+    }
+  }
+
   return {
     token,
     userName,
@@ -51,6 +58,7 @@ export const useUserStore = defineStore('user', () => {
     isLoggedIn,
     loginAction,
     getUserInfoAction,
-    logoutAction
+    logoutAction,
+    initUser
   }
 }) 

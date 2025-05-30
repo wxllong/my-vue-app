@@ -1,5 +1,11 @@
 <script setup lang="ts">
-// 移除测试代码
+import { onMounted } from 'vue'
+import { useUserStore } from '@/stores'
+
+const userStore = useUserStore()
+onMounted(() => {
+  userStore.initUser()
+})
 </script>
 
 <template>
