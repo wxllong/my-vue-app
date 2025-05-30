@@ -31,6 +31,7 @@
 
 ### 开发工具
 - [pnpm](https://pnpm.io/) - 快速、节省磁盘空间的包管理器
+- [axios](https://axios-http.com/) - HTTP 客户端
 
 ## 功能特性
 
@@ -47,7 +48,7 @@
 - 🔍 代码提交规范检查
 - 🌙 支持暗黑模式
 - 📱 响应式布局
-- 🔌 内置API请求封装
+- 🔌 内置API请求封装（支持模拟数据）
 - 🔒 路由权限控制
 - 🛠️ 自动导入组件和API
 
@@ -65,6 +66,15 @@ pnpm install
 ### 开发环境运行
 ```bash
 pnpm dev
+```
+
+### 使用SVG图标组件
+1. 将SVG文件放入`src/assets/svg`目录
+2. 在组件中直接使用：
+```vue
+<template>
+  <ComSvgIcon name="icon-name" class="custom-class" style="width: 24px; height: 24px" />
+</template>
 ```
 
 ### 生产环境构建
@@ -114,6 +124,9 @@ server: {
 ├── public/             # 静态资源
 ├── src/                # 源代码
 │   ├── api/           # API 接口
+│   │   ├── modules/   # 模块化API
+│   │   ├── types/     # 类型定义
+│   │   └── utils/     # 请求工具
 │   ├── assets/        # 资源文件
 │   ├── components/    # 公共组件
 │   ├── layouts/       # 布局组件
@@ -172,17 +185,29 @@ server: {
 2. 在`src/router/index.ts`中添加路由配置
 3. 使用自动导入功能，无需手动导入组件
 
-### 2. 如何添加API接口？
+### 2. 如何使用SVG图标组件？
+项目内置了`ComSvgIcon`组件用于显示SVG图标：
+1. 将SVG文件放入`src/assets/svg`目录
+2. 在组件中使用：
+```vue
+<ComSvgIcon name="your-svg-file-name" class="icon-class" />
+```
+3. 支持属性：
+   - `name`: SVG文件名(不带.svg后缀)
+   - `class`: 自定义样式类
+   - `style`: 自定义样式
+
+### 3. 如何添加API接口？
 1. 在`src/api/modules`下创建新模块
 2. 导出接口函数
 3. 在`src/api/index.ts`中统一导出
 
-### 3. 如何添加全局状态？
+### 4. 如何添加全局状态？
 1. 在`src/stores`下创建新store
 2. 使用Pinia的`defineStore`定义状态
 3. 在组件中使用`useStore`获取状态
 
-### 4. 如何使用全局事件总线？
+### 5. 如何使用全局事件总线？
 1. 在组件中通过 `getCurrentInstance()` 获取代理对象
 2. 使用 `$pub` 发布事件，`$sub` 订阅事件，`$unsub` 取消订阅
 
@@ -206,7 +231,7 @@ const { proxy: { $unsub } } = getCurrentInstance() as any;
 $unsub('key');
 ```
 
-### 5. 如何解决ESLint错误？
+### 6. 如何解决ESLint错误？
 - 运行`pnpm lint`查看错误
 - 运行`pnpm lint --fix`自动修复可修复的错误
 - 对于无法自动修复的错误，根据提示手动修改
