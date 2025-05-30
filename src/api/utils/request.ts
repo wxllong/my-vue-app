@@ -28,6 +28,11 @@ const mockData: Record<string, any> = {
       avatar: 'https://avatars.githubusercontent.com/u/1?v=4'
     },
     message: '获取成功'
+  },
+  '/auth/logout': {
+    code: 0,
+    data: null,
+    message: '退出成功'
   }
 }
 

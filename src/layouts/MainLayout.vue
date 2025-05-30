@@ -94,7 +94,6 @@ import { useThemeStore } from '@/stores/modules/theme'
 import { useRoute, useRouter } from 'vue-router'
 import * as Icons from '@ant-design/icons-vue'
 import { message, Modal } from 'ant-design-vue'
-import { logout } from '@/api'
 
 const user = useUserStore()
 const theme = useThemeStore()
@@ -135,8 +134,8 @@ const menuItems = computed(() => {
     })
 })
 
-const handleOpenChange = (keys: string[]) => {
-  openKeys.value = keys
+const handleOpenChange = (keys: (string | number)[]) => {
+  openKeys.value = keys as string[]
 }
 
 const handleMenuClick = (item: { path: string }) => {
@@ -154,7 +153,6 @@ const handleLogout = () => {
     cancelText: '取消',
     onOk: async () => {
       try {
-        await logout()
         user.logoutAction()
         message.success('退出成功')
         router.push('/login')
