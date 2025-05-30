@@ -15,7 +15,7 @@ export const useUserStore = defineStore('user', () => {
       const { data } = await login(params)
       token.value = data.token
       localStorage.setItem('token', data.token)
-    isLoggedIn.value = true
+      isLoggedIn.value = true
       await getUserInfoAction()
       return true
     } catch (error) {

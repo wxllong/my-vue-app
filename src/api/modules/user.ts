@@ -2,7 +2,7 @@ import type { ApiResponse } from '../types';
 import { request } from '../utils/request';
 
 // 用户登录
-interface LoginParams {
+export interface LoginParams {
   username: string;
   password: string;
 }

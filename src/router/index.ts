@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 import MainLayout from '@/layouts/MainLayout.vue'
 import { checkToken } from '@/api'
@@ -16,16 +16,15 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/',
     component: MainLayout,
-    redirect: '/home',
+    redirect: '/dashboard',
     children: [
       {
-        path: 'home',
-        name: 'Home',
-        component: () => import('@/views/Home.vue'),
+        path: 'dashboard',
+        name: 'Dashboard',
+        component: () => import('@/views/Dashboard.vue'),
         meta: {
-          title: '工作台',
-          icon: 'HomeOutlined',
-          menu: true
+          title: '仪表盘',
+          icon: 'DashboardOutlined'
         }
       },
       {
@@ -34,8 +33,7 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/Profile.vue'),
         meta: {
           title: '个人中心',
-          icon: 'UserOutlined',
-          menu: true
+          icon: 'UserOutlined'
         }
       },
       {
@@ -81,14 +79,14 @@ const routes: RouteRecordRaw[] = [
 ]
 
 const router = createRouter({
-  history: createWebHashHistory(),
+  history: createWebHistory(),
   routes
 })
 
 // 路由守卫
 router.beforeEach(async (to, from, next) => {
+  const token = localStorage.getItem('token')
   if (to.path === '/login') {
-    const token = localStorage.getItem('token')
     if (token) {
       const isValid = await checkToken()
       if (isValid) {
@@ -101,7 +99,6 @@ router.beforeEach(async (to, from, next) => {
       next()
     }
   } else {
-    const token = localStorage.getItem('token')
     if (token) {
       const isValid = await checkToken()
       if (isValid) {

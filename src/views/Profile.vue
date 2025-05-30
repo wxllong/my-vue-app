@@ -4,7 +4,7 @@
 
 <template>
   <div>Profile Page</div>
-</template>
+      </template>
 
 <style scoped>
 </style> 

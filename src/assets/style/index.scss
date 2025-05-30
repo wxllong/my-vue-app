@@ -6,3 +6,130 @@
 
 // 全局样式
 @import './main.scss'; 
+
+// 全局样式
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+    'Noto Color Emoji';
+  font-size: 14px;
+  line-height: 1.5;
+  color: $text-color;
+  background-color: #f0f2f5;
+}
+
+// 布局样式
+.layout {
+  min-height: 100vh;
+}
+
+.header {
+  background: #fff;
+  padding: 0 $layout-padding;
+  box-shadow: $box-shadow;
+  height: $header-height;
+
+  &-content {
+    @include flex(row, space-between, center);
+    height: 100%;
+  }
+}
+
+.content {
+  padding: $layout-padding;
+  min-height: calc(100vh - #{$header-height});
+}
+
+// 卡片样式
+.ant-card {
+  margin-bottom: $layout-padding;
+  
+  &-head-title {
+    font-size: 16px;
+    font-weight: 500;
+  }
+}
+
+// 按钮组样式
+.button-group {
+  @include flex(row, flex-start, center);
+  gap: 8px;
+}
+
+// 用户信息样式
+.user-info {
+  @include flex(row, flex-end, center);
+  gap: 8px;
+
+  .username {
+    color: $text-color;
+    margin: 0 8px;
+  }
+}
+
+// 页脚样式
+.footer {
+  text-align: center;
+  background: #fff;
+  padding: 16px;
+  color: $text-color-secondary;
+}
+
+// 工具类
+.ml-2 {
+  margin-left: 8px;
+}
+
+// 统计卡片样式
+.ant-statistic {
+  .ant-statistic-title {
+    color: $text-color-secondary;
+  }
+}
+
+// 深色主题
+.dark-theme {
+  background-color: #2c3e50;
+  color: #fff;
+
+  .ant-layout-header {
+    background: #2c3e50 !important;
+  }
+
+  .ant-layout-sider {
+    background: #34495e !important;
+  }
+
+  .ant-menu {
+    background: #34495e !important;
+    color: #fff;
+
+    .ant-menu-item {
+      color: #fff;
+
+      &:hover {
+        color: #1890ff;
+      }
+
+      &.ant-menu-item-selected {
+        background: #1890ff;
+        color: #fff;
+      }
+    }
+
+    .ant-menu-submenu-title {
+      color: #fff;
+
+      &:hover {
+        color: #1890ff;
+      }
+    }
+  }
+
+  .ant-layout-content {
+    background: #2c3e50 !important;
+    color: #fff;
+  }
+} 

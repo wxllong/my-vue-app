@@ -11,6 +11,26 @@ const service: AxiosInstance = axios.create({
   }
 })
 
+// 模拟数据
+const mockData: Record<string, any> = {
+  '/auth/login': {
+    code: 0,
+    data: {
+      token: 'mock-token-' + Date.now()
+    },
+    message: '登录成功'
+  },
+  '/user/info': {
+    code: 0,
+    data: {
+      id: 1,
+      username: 'admin',
+      avatar: 'https://avatars.githubusercontent.com/u/1?v=4'
+    },
+    message: '获取成功'
+  }
+}
+
 // 请求拦截器
 service.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
@@ -62,6 +82,11 @@ export function del<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
 
 // 封装请求方法
 export const request = <T = unknown>(config: AxiosRequestConfig): Promise<ApiResponse<T>> => {
+  // 模拟数据拦截
+  const url = config.url
+  if (url && mockData[url]) {
+    return Promise.resolve(mockData[url])
+  }
   return service.request(config).then(response => response.data)
 }
 

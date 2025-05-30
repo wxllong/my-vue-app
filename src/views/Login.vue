@@ -45,31 +45,30 @@ import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { message } from 'ant-design-vue'
 import { UserOutlined, LockOutlined } from '@ant-design/icons-vue'
-import { login } from '@/api'
-
-interface LoginForm {
-  username: string;
-  password: string;
-}
+import { useUserStore } from '@/stores'
 
 const router = useRouter()
+const userStore = useUserStore()
 const loading = ref(false)
 
-const formState = reactive<LoginForm>({
+const formState = reactive({
   username: '',
   password: ''
 })
 
-const handleFinish = async (values: LoginForm) => {
+const handleFinish = async (values: typeof formState) => {
   try {
     loading.value = true
-    const { data } = await login(values)
-    localStorage.setItem('token', data.token)
+    const success = await userStore.loginAction(values)
+    if (success) {
     message.success('登录成功')
     router.push('/')
+    } else {
+      message.error('登录失败')
+    }
   } catch (error) {
     if (error instanceof Error) {
-      message.error(error.message || '登录失败')
+    message.error(error.message || '登录失败')
     } else {
       message.error('登录失败')
     }

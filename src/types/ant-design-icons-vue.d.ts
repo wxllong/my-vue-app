@@ -9,4 +9,5 @@ declare module '@ant-design/icons-vue' {
   export const LockOutlined: DefineComponent<{}, {}, unknown>
   export const BulbOutlined: DefineComponent<{}, {}, unknown>
   export const LogoutOutlined: DefineComponent<{}, {}, unknown>
+  export const DashboardOutlined: DefineComponent<{}, {}, unknown>
 } 
