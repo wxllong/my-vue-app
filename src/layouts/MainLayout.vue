@@ -89,10 +89,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue'
 import { useUserStore } from '@/stores'
 import { useThemeStore } from '@/stores/modules/theme'
-import { BulbOutlined, UserOutlined, LogoutOutlined } from '@ant-design/icons-vue'
 import { useRoute, useRouter } from 'vue-router'
 import * as Icons from '@ant-design/icons-vue'
 import { message, Modal } from 'ant-design-vue'

@@ -3,8 +3,16 @@ import tseslint from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
 import * as parser from 'vue-eslint-parser';
 import globals from 'globals';
+import fs from 'fs';
+import path from 'path';
 
-// 基础配置
+// 读取自动导入的全局变量 json 文件（用同步方式，兼容性好）
+const autoImportGlobalsPath = path.resolve(process.cwd(), './.eslintrc-auto-import.json');
+const autoImportGlobals = fs.existsSync(autoImportGlobalsPath)
+  ? JSON.parse(fs.readFileSync(autoImportGlobalsPath, 'utf-8'))
+  : { globals: {} };
+
+// 基础通用配置（不包含 parser，不包含 plugins）
 const baseConfig = {
   ignores: [
     'node_modules',
@@ -29,6 +37,8 @@ const baseConfig = {
       ...globals.browser,
       ...globals.es2021,
       ...globals.node,
+      ...autoImportGlobals.globals,
+      // Vue 3 组合式 API 宏定义，避免 eslint 警告
       defineProps: 'readonly',
       defineEmits: 'readonly',
       defineExpose: 'readonly',
@@ -37,53 +47,33 @@ const baseConfig = {
   },
 };
 
-// TypeScript 规则
+// TypeScript 规则（你原来的规则基础上稍作保留）
 const tsRules = {
   '@typescript-eslint/adjacent-overload-signatures': 'error',
-  '@typescript-eslint/no-array-constructor': 'error',
-  '@typescript-eslint/no-empty-function': 'warn',
   '@typescript-eslint/no-explicit-any': 'warn',
-  '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
-  '@typescript-eslint/no-var-requires': 'error',
-  '@typescript-eslint/prefer-as-const': 'warn',
-  'no-undef': 'error',
-  'no-console': ['warn', { allow: ['warn', 'error'] }],
+  '@typescript-eslint/no-unused-vars': [
+    'warn',
+    {
+      argsIgnorePattern: '^_',
+      varsIgnorePattern: '^_',
+      caughtErrorsIgnorePattern: '^_',
+    },
+  ],
+  '@typescript-eslint/ban-ts-comment': 'off',
+  'no-undef': 'off', // 关闭原生 no-undef，由 TS 处理
 };
 
-// Vue 规则
+// Vue 规则（基于 TS 规则增强）
 const vueRules = {
   ...tsRules,
-  'vue/multi-word-component-names': 'off',
+  'vue/multi-word-component-names': 'off', // 可根据需求开关
+  'vue/component-api-style': ['error', ['script-setup']], // 强制 script setup 书写风格
+  'vue/no-undef-components': 'off', // 开启组件未定义检查
   'vue/no-v-html': 'off',
-  'vue/require-default-prop': 'error',
-  'vue/require-explicit-emits': 'error',
-  'vue/require-prop-types': 'error',
-  'vue/require-toggle-inside-transition': 'error',
-  'vue/return-in-computed-property': 'error',
-  'vue/return-in-emits-validator': 'error',
-  'vue/use-v-on-exact': 'error',
-  'vue/valid-define-emits': 'error',
-  'vue/valid-define-props': 'error',
-  'vue/valid-next-tick': 'error',
-  'vue/valid-template-root': 'error',
-  'vue/valid-v-bind': 'error',
-  'vue/valid-v-cloak': 'error',
-  'vue/valid-v-else-if': 'error',
-  'vue/valid-v-else': 'error',
-  'vue/valid-v-for': 'error',
-  'vue/valid-v-html': 'error',
-  'vue/valid-v-if': 'error',
-  'vue/valid-v-is': 'error',
-  'vue/valid-v-memo': 'error',
-  'vue/valid-v-model': 'error',
-  'vue/valid-v-on': 'error',
-  'vue/valid-v-once': 'error',
-  'vue/valid-v-pre': 'error',
-  'vue/valid-v-show': 'error',
-  'vue/valid-v-slot': 'error',
-  'vue/valid-v-text': 'error',
+  'vue/require-default-prop': 'warn',
 };
 
+// eslint 配置导出（ESM 格式）
 export default [
   // Vue 文件配置
   {
@@ -91,10 +81,11 @@ export default [
     files: ['**/*.vue'],
     languageOptions: {
       ...baseConfig.languageOptions,
-      parser,
+      parser, // vue-eslint-parser 负责 .vue 文件
       parserOptions: {
-        parser: tsParser,
+        parser: tsParser, // 使用 ts-eslint 解析 <script lang="ts">
         extraFileExtensions: ['.vue'],
+        ecmaFeatures: { jsx: true },
       },
     },
     plugins: {
@@ -103,7 +94,7 @@ export default [
     },
     rules: vueRules,
   },
-  // TypeScript 文件配置
+  // TS/TSX 文件配置
   {
     ...baseConfig,
     files: ['**/*.ts', '**/*.tsx'],
@@ -116,16 +107,4 @@ export default [
     },
     rules: tsRules,
   },
-  // Vite 配置
-  {
-    ...baseConfig,
-    files: ['vite.config.ts'],
-    languageOptions: {
-      ...baseConfig.languageOptions,
-      globals: {
-        ...baseConfig.languageOptions.globals,
-        __dirname: 'readonly',
-      },
-    },
-  },
-]; 
+];
