@@ -1,7 +1,7 @@
 <template>
   <div class="login-container">
     <div class="login-box">
-      <h2>Vue Admin TS</h2>
+      <h2>Vue3 Demo</h2>
       <a-form
         :model="formState"
         name="login"
