@@ -265,7 +265,9 @@ $dark-border: #303030;
 .content {
   padding: 24px;
   background: #f0f2f5;
-  min-height: calc(100vh - 64px);
+  height: calc(100vh - 64px);
+  overflow-x: auto;
+  white-space: nowrap;
 }
 
 // 暗色主题
