@@ -30,12 +30,10 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   (response: AxiosResponse<ApiResponse>) => {
     const res = response.data
-    // 这里可以根据后端的响应结构定制
-    if (res.code === 0) {
-      return res.data
+    if (res.code !== 0) {
+      return Promise.reject(new Error(res.message || '请求失败'))
     }
-    // 处理其他状态码
-    return Promise.reject(new Error(res.message || 'Error'))
+    return response
   },
   (error: Error) => {
     return Promise.reject(error)
@@ -43,23 +41,28 @@ service.interceptors.response.use(
 )
 
 // 封装 GET 请求
-export function get<T>(url: string, params?: any, config?: AxiosRequestConfig): Promise<T> {
+export function get<T>(url: string, params?: Record<string, unknown>, config?: AxiosRequestConfig): Promise<T> {
   return service.get(url, { params, ...config })
 }
 
 // 封装 POST 请求
-export function post<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
+export function post<T>(url: string, data?: Record<string, unknown>, config?: AxiosRequestConfig): Promise<T> {
   return service.post(url, data, config)
 }
 
 // 封装 PUT 请求
-export function put<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
+export function put<T>(url: string, data?: Record<string, unknown>, config?: AxiosRequestConfig): Promise<T> {
   return service.put(url, data, config)
 }
 
 // 封装 DELETE 请求
 export function del<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
   return service.delete(url, config)
+}
+
+// 封装请求方法
+export const request = <T = unknown>(config: AxiosRequestConfig): Promise<ApiResponse<T>> => {
+  return service.request(config).then(response => response.data)
 }
 
 export default service 

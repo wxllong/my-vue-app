@@ -52,8 +52,12 @@ const handleLogout = () => {
         localStorage.removeItem('token')
         message.success('退出成功')
         router.push('/login')
-      } catch (error: any) {
-        message.error(error.message || '退出失败')
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          message.error(error.message || '退出失败')
+        } else {
+          message.error('退出失败')
+        }
       }
     }
   })
@@ -113,7 +117,7 @@ const handleLogout = () => {
           :class="{ 'dark-menu': theme.isDark }"
         >
           <template v-for="item in menuItems" :key="item.key">
-            <a-sub-menu v-if="item.children?.length" :key="item.key">
+            <a-sub-menu v-if="item.children?.length" :key="`sub-${item.key}`">
               <template #icon>
                 <component :is="item.icon" v-if="item.icon" />
               </template>
@@ -128,7 +132,7 @@ const handleLogout = () => {
             </a-sub-menu>
             <a-menu-item
               v-else
-              :key="item.key"
+              :key="`item-${item.key}`"
               @click="handleMenuClick(item)"
             >
               <template #icon>
