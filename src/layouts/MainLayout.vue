@@ -1,6 +1,5 @@
 <template>
   <a-layout class="layout" :class="{ 'dark-theme': theme.isDark }">
-    <!-- 顶部导航 -->
     <a-layout-header class="header">
       <div class="header-content">
         <div class="logo">
@@ -39,7 +38,6 @@
     </a-layout-header>
 
     <a-layout>
-      <!-- 左侧菜单 -->
       <a-layout-sider
         v-model:collapsed="collapsed"
         :trigger="null"
@@ -53,6 +51,7 @@
           :openKeys="openKeys"
           class="menu"
           :class="{ 'dark-menu': theme.isDark }"
+          @openChange="handleOpenChange"
         >
           <template v-for="item in menuItems" :key="item.key">
             <a-sub-menu v-if="item.children?.length" :key="item.key">
@@ -82,7 +81,6 @@
         </a-menu>
       </a-layout-sider>
 
-      <!-- 右侧内容 -->
       <a-layout-content class="content" :class="{ 'dark-content': theme.isDark }">
         <router-view></router-view>
       </a-layout-content>
@@ -91,7 +89,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useUserStore } from '@/stores'
 import { useThemeStore } from '@/stores/modules/theme'
 import { BulbOutlined, UserOutlined, LogoutOutlined } from '@ant-design/icons-vue'
@@ -105,53 +103,48 @@ const theme = useThemeStore()
 const collapsed = ref(false)
 const route = useRoute()
 const router = useRouter()
-const selectedKeys = ref<string[]>([route.path])
+const selectedKeys = ref<string[]>([])
+const openKeys = ref<string[]>([])
 
-// 监听路由变化，更新 selectedKeys
-watch(() => route.path, (newPath) => {
+watch(() => route.fullPath, (newPath) => {
   selectedKeys.value = [newPath]
-})
+}, { immediate: true })
 
-// 从路由配置中获取菜单数据
 const menuItems = computed(() => {
   const mainRoute = router.options.routes.find(r => r.path === '/')
   if (!mainRoute?.children) return []
 
   return mainRoute.children
     .filter(route => !route.meta?.hidden)
-    .map(route => ({
-      key: route.path,
-      icon: route.meta?.icon ? Icons[route.meta.icon as keyof typeof Icons] : undefined,
-      label: route.meta?.title,
-      path: route.path,
-      children: route.children?.filter(child => !child.meta?.hidden).map(child => ({
-        key: child.path.startsWith('/') ? child.path : `${route.path}/${child.path}`,
-        label: child.meta?.title,
-        path: child.path.startsWith('/') ? child.path : `${route.path}/${child.path}`
-      }))
-    }))
+    .map(route => {
+      const fullPath = route.path.startsWith('/') ? route.path : '/' + route.path
+      return {
+        key: fullPath,
+        icon: route.meta?.icon ? Icons[route.meta.icon as keyof typeof Icons] : undefined,
+        label: route.meta?.title,
+        path: fullPath,
+        children: route.children?.filter(child => !child.meta?.hidden).map(child => {
+          const childFullPath = child.path.startsWith('/')
+            ? child.path
+            : `${fullPath}/${child.path}`
+          return {
+            key: childFullPath,
+            label: child.meta?.title,
+            path: childFullPath
+          }
+        })
+      }
+    })
 })
 
-// 展开的子菜单
-const openKeys = computed(() => {
-  const path = route.path
-  const keys: string[] = []
-  
-  // 检查当前路径是否在某个子菜单下
-  const parentRoute = menuItems.value.find(item => 
-    item.children?.some(child => child.path === path)
-  )
-  
-  if (parentRoute) {
-    keys.push(parentRoute.key)
-  }
-  
-  return keys
-})
+const handleOpenChange = (keys: string[]) => {
+  openKeys.value = keys
+}
 
 const handleMenuClick = (item: { path: string }) => {
-  if (route.path !== item.path) {
-    router.push(item.path)
+  const targetPath = item.path.startsWith('/') ? item.path : `/${item.path}`
+  if (route.fullPath !== targetPath) {
+    router.push(targetPath)
   }
 }
 
@@ -168,15 +161,28 @@ const handleLogout = () => {
         message.success('退出成功')
         router.push('/login')
       } catch (error: unknown) {
-        if (error instanceof Error) {
-          message.error(error.message || '退出失败')
-        } else {
-          message.error('退出失败')
-        }
+        message.error(error instanceof Error ? error.message : '退出失败')
       }
     }
   })
 }
+
+// 获取当前路径的父路径作为 openKeys 初始值
+onMounted(() => {
+  const findParentPath = (path: string): string | null => {
+    for (const item of menuItems.value) {
+      if (item.children?.some(child => child.path === path)) {
+        return item.key
+      }
+    }
+    return null
+  }
+
+  const parentKey = findParentPath(route.path)
+  if (parentKey) {
+    openKeys.value = [parentKey]
+  }
+})
 </script>
 
 <style lang="scss" scoped>
@@ -243,84 +249,12 @@ const handleLogout = () => {
 }
 
 .sider {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 
   .menu {
     height: 100%;
     border-right: none;
-
-    :deep(.ant-menu-item) {
-      margin: 4px 8px;
-      padding: 0 16px;
-      height: 40px;
-      line-height: 40px;
-      border-radius: 4px;
-
-      &:hover {
-        color: #1890ff;
-        background: rgba(24, 144, 255, 0.1);
-      }
-
-      &.ant-menu-item-selected {
-        background: #1890ff !important;
-        color: #fff !important;
-
-        &::after {
-          display: none;
-        }
-
-        .anticon {
-          color: #fff !important;
-        }
-      }
-    }
-
-    :deep(.ant-menu-submenu) {
-      .ant-menu-submenu-title {
-        margin: 4px 8px;
-        padding: 0 16px;
-        height: 40px;
-        line-height: 40px;
-        border-radius: 4px;
-
-        &:hover {
-          color: #1890ff;
-          background: rgba(24, 144, 255, 0.1);
-        }
-      }
-
-      .ant-menu-sub {
-        background: transparent;
-        padding: 4px 0;
-
-        .ant-menu-item {
-          margin: 4px 8px;
-          padding: 0 16px;
-          height: 40px;
-          line-height: 40px;
-          border-radius: 4px;
-
-          &:hover {
-            color: #1890ff;
-            background: rgba(24, 144, 255, 0.1);
-          }
-
-          &.ant-menu-item-selected {
-            background: #1890ff !important;
-            color: #fff !important;
-
-            &::after {
-              display: none;
-            }
-
-            .anticon {
-              color: #fff !important;
-            }
-          }
-        }
-      }
-    }
   }
 }
 
@@ -334,59 +268,8 @@ const handleLogout = () => {
     background: #34495e !important;
 
     .menu {
-    background: #34495e !important;
-    color: #fff;
-
-    :deep(.ant-menu-item) {
+      background: #34495e !important;
       color: #fff;
-
-      &:hover {
-        color: #1890ff;
-          background: rgba(24, 144, 255, 0.1);
-      }
-
-      &.ant-menu-item-selected {
-          background: #1890ff !important;
-          color: #fff !important;
-
-          .anticon {
-            color: #fff !important;
-          }
-      }
-    }
-
-      :deep(.ant-menu-submenu) {
-        .ant-menu-submenu-title {
-          color: #fff;
-
-          &:hover {
-            color: #1890ff;
-            background: rgba(24, 144, 255, 0.1);
-          }
-        }
-
-        .ant-menu-sub {
-          background: #2c3e50 !important;
-
-          .ant-menu-item {
-      color: #fff;
-
-      &:hover {
-        color: #1890ff;
-              background: rgba(24, 144, 255, 0.1);
-            }
-
-            &.ant-menu-item-selected {
-              background: #1890ff !important;
-              color: #fff !important;
-
-              .anticon {
-                color: #fff !important;
-              }
-            }
-          }
-        }
-      }
     }
   }
 
@@ -396,38 +279,11 @@ const handleLogout = () => {
   }
 }
 
-// 覆盖 ant-design-vue 的默认样式
-:deep(.ant-menu) {
-  .ant-menu-item-selected {
-    background-color: #1890ff !important;
+:deep(.ant-menu-item-selected) {
+  background-color: #1890ff !important;
+  color: #fff !important;
+  .anticon {
     color: #fff !important;
-
-    .anticon {
-      color: #fff !important;
-    }
-  }
-
-  .ant-menu-submenu-selected {
-    > .ant-menu-submenu-title {
-      color: #1890ff !important;
-    }
   }
 }
-
-:deep(.ant-menu-dark) {
-  .ant-menu-item-selected {
-    background-color: #1890ff !important;
-    color: #fff !important;
-
-    .anticon {
-      color: #fff !important;
-    }
-  }
-
-  .ant-menu-submenu-selected {
-    > .ant-menu-submenu-title {
-      color: #1890ff !important;
-    }
-  }
-}
-</style> 
+</style>
